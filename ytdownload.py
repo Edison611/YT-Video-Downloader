@@ -6,8 +6,8 @@ from pytubefix.cli import on_progress
 def Download(link):
     youtubeObject = YouTube(link, on_progress_callback = on_progress)
     # youtubeObject = youtubeObject.streams.get_highest_resolution() # Used for Video Downloads
-    youtubeObject = youtubeObject.streams.get_highest_resolution()
-    youtubeObject.download(mp3=True, output_path="/Users/edisony611/Documents/Music/")
+    youtubeObject = youtubeObject.streams.get_audio_only()
+    youtubeObject.download(output_path="/Users/ediso/Documents/Music/")
     # except:
     #     print("An error has occurred")
     print("Download is completed successfully")
