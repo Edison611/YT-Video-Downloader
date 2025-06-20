@@ -1,7 +1,5 @@
 import tempfile
 from pytubefix import YouTube
-from pytubefix.cli import on_progress
-import os
 
 def Download(link):
     print("Starting download... for", link)
@@ -10,7 +8,7 @@ def Download(link):
     file_name = "".join(c for c in f"{youtubeObject.title}.m4a" if c.isalnum() or c in (' ', '.', '_')).strip()
 
     # youtubeObject = youtubeObject.streams.get_highest_resolution() # Used for Video Downloads
-    youtubeObject = youtubeObject.streams.get_audio_only()
+    youtubeObject = youtubeObject.streams.get_audio_only() # Used for Audio Downloads
     full_path = youtubeObject.download(output_path=tmp_dir, filename=file_name)
 
 

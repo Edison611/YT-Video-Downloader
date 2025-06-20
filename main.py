@@ -1,14 +1,17 @@
 from fastapi import FastAPI, Query
 from download import Download
 from fastapi.responses import FileResponse
-from starlette.background import BackgroundTask
 import os
+import glob
+from converter import convert_to_mp3
 
 app = FastAPI()
 
-def remove_file(path: str):
+def remove_tmp_files():
     try:
-        os.remove(path)
+        for file_path in glob.glob("/tmp/*"):
+            if os.path.isfile(file_path):
+                os.remove(file_path)
     except FileNotFoundError:
         pass
 
@@ -19,12 +22,16 @@ def root():
 @app.get("/download")
 def download_video(url: str = Query(...)):
     try:
+        if not url:
+            return {"error": "URL parameter is required."}
+        remove_tmp_files()  # Clean up temporary files before download
         file_path, filename = Download(url)
+        file_path, filename = convert_to_mp3(file_path)
+
         return FileResponse(
             path=file_path,
             filename=filename,
-            media_type="audio/mp4",
-            # background=BackgroundTask(remove_file, file_path)
+            media_type="audio/mp3"
         )
     except Exception as e:
         return {"error": str(e)}
