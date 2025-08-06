@@ -4,7 +4,7 @@ from pytubefix.cli import on_progress
 
 
 def Download(link):
-    youtubeObject = YouTube(link, client='WEB_EMBED', on_progress_callback = on_progress, )
+    youtubeObject = YouTube(link, client='WEB', on_progress_callback = on_progress, )
     # youtubeObject = youtubeObject.streams.get_highest_resolution() # Used for Video Downloads
     youtubeObject = youtubeObject.streams.get_audio_only()
     youtubeObject.download(output_path="/Users/ediso/Documents/Music/")
