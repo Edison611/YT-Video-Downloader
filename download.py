@@ -3,7 +3,7 @@ from pytubefix import YouTube
 
 def Download(link):
     print("Starting download... for", link)
-    youtubeObject = YouTube(link, client='WEB_EMBED')
+    youtubeObject = YouTube(link, client='WEB')
     tmp_dir = tempfile.gettempdir()
     file_name = "".join(c for c in f"{youtubeObject.title}.m4a" if c.isalnum() or c in (' ', '.', '_')).strip()
 
