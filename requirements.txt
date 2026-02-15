@@ -3,3 +3,4 @@ starlette~=0.38.2
 pytubefix~=10.3.6
 pydub~=0.25.1
 uvicorn[standard]
+yt-dlp~=2025.10.14
