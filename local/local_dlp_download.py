@@ -5,6 +5,7 @@ def download_audio(url):
         "format": "bestaudio/best",
         "outtmpl": r"C:\Users\ediso\Documents\Music\%(title)s.%(ext)s",
         "extractaudio": True,
+        "noplaylist": True,
         "postprocessors": [{
             "key": "FFmpegExtractAudio",
             "preferredcodec": "mp3",
@@ -23,6 +24,7 @@ def download_audio(url):
 
 
 if __name__ == "__main__":
-    link = input("Enter YouTube link: ")
-    download_audio(link)
-    print("Download completed successfully")
+    while True:
+        link = input("Enter YouTube link: ")
+        download_audio(link)
+        print("Download completed successfully")
