@@ -1,52 +1,59 @@
-from fastapi import FastAPI, Query
-from download import Download
-from fastapi.responses import FileResponse
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import yt_dlp
 import os
-import glob
-from converter import convert_to_mp3
+
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-def remove_tmp_files():
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # sloppy for local testing
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+CONTAINER_DOWNLOAD_DIR = "/downloads"
+
+class DownloadRequest(BaseModel):
+    url: str
+
+def download_audio(url: str):
+    outtmpl = os.path.join(CONTAINER_DOWNLOAD_DIR, "%(title)s.%(ext)s")
+
+    ydl_opts = {
+        "format": "bestaudio/best",
+        "outtmpl": outtmpl,
+        "extractaudio": True,
+        "noplaylist": True,
+        "postprocessors": [{
+            "key": "FFmpegExtractAudio",
+            "preferredcodec": "mp3",
+            "preferredquality": "192",
+        }],
+        "extractor_args": {
+            "youtube": {
+                "player_client": ["android"],
+                "player_skip": ["webpage"]
+            }
+        }
+    }
+
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([url])
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
+@app.post("/download")
+def download(req: DownloadRequest):
     try:
-        for file_path in glob.glob("/tmp/*"):
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-    except FileNotFoundError:
-        pass
-
-@app.get("/", response_class=HTMLResponse)
-def root():
-    return """
-    <html>
-      <head>
-        <title>YouTube MP3 Downloader</title>
-      </head>
-      <body>
-        <h2>Use /download?url=<video_url> to download videos or submit url in the following form</h2>
-        <form action="/download" method="get">
-          <input type="text" name="url" placeholder="Enter video URL" size="100" required />
-          <br><br>
-          <button type="submit">Download</button>
-        </form>
-      </body>
-    </html>
-    """
-
-@app.get("/download")
-def download(url: str = Query(...)):
-    try:
-        if not url:
-            return {"error": "URL parameter is required."}
-        remove_tmp_files()  # Clean up temporary files before download
-        file_path, filename = Download(url)
-        file_path, filename = convert_to_mp3(file_path)
-
-        return FileResponse(
-            path=file_path,
-            filename=filename,
-            media_type="audio/mp3"
-        )
+        download_audio(req.url)
+        return {"status": "completed"}
     except Exception as e:
-        return {"error": str(e)}
+        raise HTTPException(status_code=500, detail=str(e))

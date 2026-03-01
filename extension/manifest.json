@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Local YT Audio Downloader",
+  "version": "0.1",
+  "description": "Downloads YouTube audio using a local Python backend",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "tabs",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:8765/*"
+  ]
+}
