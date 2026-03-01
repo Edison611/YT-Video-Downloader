@@ -1,6 +1,30 @@
-# How To Use
-Copy the URL of the video you wish to download and enter it into the terminal after running the local version with local_ytdownload.py and it will download an m4a file.
+# YouTube Audio Downloader (Local)
 
-If you wish to convert the m4a file, run local_converter.py and change the path accordingly.
+This is a simple **local** setup for downloading audio from YouTube videos using a FastAPI backend and a Chrome extension frontend.
 
-For hosting or running with Docker, after you run the container, go to localhost:8000/download?url=<video_url> which will start the download that will go in your default downloads location. Please note some videos may not be available and this commonly gets outdated. So when a new pytubefix version releases, use that version instead.
+## Setup
+
+### 1. Run the backend locally
+
+1. Build the Docker image:
+
+```bash
+docker build -t yt_download .
+```
+
+2. Run the container with the download folder mounted:
+
+```bash
+docker run -p 8765:8765 -v {local-path}:/downloads yt_download
+```
+Note: With Docker Desktop, set the port to 8765 and mount the local directory when running
+
+### 2. Load the Chrome extension
+
+Open Chrome and go to chrome://extensions/.
+
+Enable Developer mode.
+
+Click Load unpacked and select the folder containing the extension files.
+
+Make sure the backend is running locally, then open a YouTube video and use the extension to download audio.
