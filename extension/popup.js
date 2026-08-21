@@ -1,4 +1,11 @@
-const BACKEND = "http://127.0.0.1:8765";
+// Docker Desktop on Windows does not always bind both loopback families:
+// "localhost" resolves to ::1 first while the IPv4 127.0.0.1 binding may be
+// absent (or vice versa). Probe both and use whichever answers.
+const BACKEND_CANDIDATES = [
+  "http://localhost:8765",
+  "http://127.0.0.1:8765",
+];
+let backend = BACKEND_CANDIDATES[0];
 const DEFAULT_FOLDER = "YT Audio Downloads";
 const POLL_INTERVAL_MS = 1200;
 const POLL_TIMEOUT_MS = 15 * 60 * 1000;
@@ -137,24 +144,34 @@ folderInput.onchange = async () => {
 
 /* ---------- BACKEND ---------- */
 
-async function checkBackend() {
-  try {
-    const res = await fetch(`${BACKEND}/health`, { method: "GET" });
-    if (!res.ok) throw new Error("Backend not responding");
+async function probeBackend(base) {
+  const res = await fetch(`${base}/health`, { method: "GET" });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
 
-    const health = await res.json();
-    backendStatus.textContent = health.drive_available
-      ? "Backend running!"
-      : "Backend running (Drive libraries missing)";
-    backendStatus.classList.remove("error");
-    backendStatus.classList.add("ok");
-    app.classList.remove("hidden");
-  } catch {
-    backendStatus.textContent =
-      "Backend not running. Start it locally to use the extension.";
-    backendStatus.classList.remove("ok");
-    backendStatus.classList.add("error");
+async function checkBackend() {
+  for (const candidate of BACKEND_CANDIDATES) {
+    try {
+      const health = await probeBackend(candidate);
+      backend = candidate; // every later call reuses the host that answered
+
+      backendStatus.textContent = health.drive_available
+        ? "Backend running!"
+        : "Backend running (Drive libraries missing)";
+      backendStatus.classList.remove("error");
+      backendStatus.classList.add("ok");
+      app.classList.remove("hidden");
+      return;
+    } catch {
+      // Try the next loopback host.
+    }
   }
+
+  backendStatus.textContent =
+    "Backend not running. Start it locally to use the extension.";
+  backendStatus.classList.remove("ok");
+  backendStatus.classList.add("error");
 }
 
 const STAGE_LABELS = {
@@ -170,7 +187,7 @@ async function pollJob(jobId) {
   while (Date.now() < deadline) {
     await sleep(POLL_INTERVAL_MS);
 
-    const res = await fetch(`${BACKEND}/jobs/${jobId}`);
+    const res = await fetch(`${backend}/jobs/${jobId}`);
     if (!res.ok) throw new Error(`Lost track of the job (HTTP ${res.status})`);
 
     const job = await res.json();
@@ -182,7 +199,7 @@ async function pollJob(jobId) {
 }
 
 async function startJob(token) {
-  const res = await fetch(`${BACKEND}/download`, {
+  const res = await fetch(`${backend}/download`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -202,7 +219,7 @@ async function startJob(token) {
 
 /** Upload-only retry, so an expired token costs no re-download. */
 async function retryUpload(jobId, token) {
-  const res = await fetch(`${BACKEND}/jobs/${jobId}/upload`, {
+  const res = await fetch(`${backend}/jobs/${jobId}/upload`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-Drive-Token": token },
     body: JSON.stringify({
