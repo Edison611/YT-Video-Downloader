@@ -19,7 +19,7 @@ docker build -t yt_download .
 ```bash
 docker run -p 8765:8765 -v {local-path}:/downloads yt_download
 ```
-Note: With Docker Desktop, set the port to 8765 and mount the local directory when running
+Note: With Docker Desktop, set the port to 8765 and mount the local directory when running, mapped to the /downloads in the container
 
 ### 2. Load the Chrome extension
 
