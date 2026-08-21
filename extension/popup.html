@@ -8,11 +8,13 @@
     --yt-red-dark: #cc0000;
     --bg: #0f0f0f;
     --panel: #181818;
+    --panel-2: #212121;
     --border: #303030;
     --text: #f1f1f1;
     --text-muted: #aaaaaa;
     --success: #3ddc84;
     --error: #ff5c5c;
+    --info: #6ba8ff;
   }
 
   * {
@@ -44,7 +46,10 @@
     height: 13px;
     background: var(--yt-red);
     border-radius: 3px;
-    position: relative;
+  }
+
+  .hidden {
+    display: none !important;
   }
 
   #backend-status {
@@ -86,6 +91,128 @@
   #video.detected {
     color: var(--text);
   }
+
+  /* ---------- Drive section ---------- */
+
+  .drive {
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    margin-bottom: 14px;
+  }
+
+  .toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .toggle input {
+    accent-color: var(--yt-red);
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  #drive-config {
+    margin-top: 10px;
+  }
+
+  button.secondary {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  button.secondary:hover:not(:disabled) {
+    background: #2c2c2c;
+  }
+
+  button.secondary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .connected-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .badge {
+    font-size: 12px;
+    color: var(--success);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .badge::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--success);
+  }
+
+  button.link {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 11px;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 2px;
+  }
+
+  button.link:hover {
+    color: var(--text);
+  }
+
+  .field-label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-muted);
+    margin: 12px 0 5px;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 7px 9px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+
+  input[type="text"]:focus {
+    outline: none;
+    border-color: var(--yt-red);
+  }
+
+  .hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin: 6px 0 0;
+    line-height: 1.4;
+  }
+
+  /* ---------- Action ---------- */
 
   button#download {
     width: 100%;
@@ -129,6 +256,22 @@
   #status.error {
     color: var(--error);
   }
+
+  #status.warn {
+    color: #ffc860;
+  }
+
+  #drive-link {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--info);
+    text-decoration: none;
+  }
+
+  #drive-link:hover {
+    text-decoration: underline;
+  }
 </style>
 </head>
 <body>
@@ -137,12 +280,33 @@
 
 <p id="backend-status">Checking backend...</p>
 
-<div id="app" style="display:none">
+<div id="app" class="hidden">
   <p id="video">Detecting video...</p>
+
+  <section class="drive">
+    <label class="toggle" for="upload-toggle">
+      <input type="checkbox" id="upload-toggle" checked>
+      Also upload to Google Drive
+    </label>
+
+    <div id="drive-config">
+      <button id="connect" class="secondary">Connect Google Drive</button>
+
+      <div id="drive-connected" class="connected-row hidden">
+        <span class="badge">Drive connected</span>
+        <button id="disconnect" class="link">Disconnect</button>
+      </div>
+
+      <label class="field-label" for="folder">Drive folder</label>
+      <input type="text" id="folder" placeholder="YT Audio Downloads" spellcheck="false">
+      <p class="hint">Created in your Drive if missing. Use <code>/</code> for nested folders.</p>
+    </div>
+  </section>
 
   <button id="download">Download MP3</button>
 
   <p id="status"></p>
+  <a id="drive-link" class="hidden" target="_blank" rel="noopener">Open in Drive &rsaquo;</a>
 </div>
 
 <script src="popup.js"></script>

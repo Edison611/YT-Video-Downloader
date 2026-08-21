@@ -4,3 +4,5 @@ pytubefix~=10.3.6
 pydub~=0.25.1
 uvicorn[standard]
 yt-dlp~=2025.10.14
+google-api-python-client~=2.199.0
+google-auth~=2.56.3

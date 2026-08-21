@@ -1,16 +1,23 @@
 {
   "manifest_version": 3,
   "name": "Local YT Audio Downloader",
-  "version": "0.1",
-  "description": "Downloads YouTube audio using a local Python backend",
+  "version": "0.2",
+  "description": "Downloads YouTube audio using a local Python backend and mirrors it to Google Drive",
   "action": {
     "default_popup": "popup.html"
   },
   "permissions": [
     "tabs",
-    "storage"
+    "storage",
+    "identity"
   ],
   "host_permissions": [
     "http://127.0.0.1:8765/*"
-  ]
+  ],
+  "oauth2": {
+    "client_id": "242095068590-1cjm6n847600o9ibs0d19dfph0ga1gj5.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/drive.file"
+    ]
+  }
 }
