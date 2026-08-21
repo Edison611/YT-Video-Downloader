@@ -1,6 +1,137 @@
 <!DOCTYPE html>
 <html>
-<body style="width:300px;font-family:Arial">
+<head>
+<meta charset="UTF-8">
+<style>
+  :root {
+    --yt-red: #ff0000;
+    --yt-red-dark: #cc0000;
+    --bg: #0f0f0f;
+    --panel: #181818;
+    --border: #303030;
+    --text: #f1f1f1;
+    --text-muted: #aaaaaa;
+    --success: #3ddc84;
+    --error: #ff5c5c;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    width: 300px;
+    margin: 0;
+    padding: 16px;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  h3 {
+    margin: 0 0 12px;
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  h3::before {
+    content: "";
+    display: inline-block;
+    width: 18px;
+    height: 13px;
+    background: var(--yt-red);
+    border-radius: 3px;
+    position: relative;
+  }
+
+  #backend-status {
+    font-size: 12px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    margin: 0 0 12px;
+  }
+
+  #backend-status.ok {
+    color: var(--success);
+    border-color: rgba(61, 220, 132, 0.35);
+    background: rgba(61, 220, 132, 0.08);
+  }
+
+  #backend-status.error {
+    color: var(--error);
+    border-color: rgba(255, 92, 92, 0.35);
+    background: rgba(255, 92, 92, 0.08);
+  }
+
+  #app {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+
+  #video {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0 0 12px;
+    line-height: 1.4;
+  }
+
+  #video.detected {
+    color: var(--text);
+  }
+
+  button#download {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--yt-red);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.05s ease;
+  }
+
+  button#download:hover:not(:disabled) {
+    background: var(--yt-red-dark);
+  }
+
+  button#download:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  button#download:disabled {
+    background: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  #status {
+    margin: 10px 0 0;
+    font-size: 12px;
+    color: var(--text-muted);
+    min-height: 14px;
+    line-height: 1.4;
+  }
+
+  #status.success {
+    color: var(--success);
+  }
+
+  #status.error {
+    color: var(--error);
+  }
+</style>
+</head>
+<body>
 
 <h3>YouTube Audio Downloader</h3>
 
